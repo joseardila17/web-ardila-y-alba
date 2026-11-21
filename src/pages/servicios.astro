@@ -1,0 +1,77 @@
+---
+import Layout from "../layouts/Layout.astro";
+import SectionTitle from "../components/SectionTitle.astro";
+import ServiceCard from "../components/ServiceCard.astro";
+import CTABanner from "../components/CTABanner.astro";
+import { COMPANY } from "../data/company";
+import { SERVICES } from "../data/services";
+
+const CATEGORIES = ["Electricidad", "Energía y eficiencia", "Climatización y equipos", "Instalaciones para inmuebles"] as const;
+
+const CATEGORY_DESCRIPTIONS: Record<string, string> = {
+  "Electricidad": "Instalaciones, reparaciones, cuadros eléctricos y todo lo relacionado con el sistema eléctrico de tu hogar o negocio.",
+  "Energía y eficiencia": "Soluciones para mejorar la eficiencia energética: placas solares, iluminación LED y mantenimiento.",
+  "Climatización y equipos": "Sistemas de climatización, aire acondicionado y bombas de pozo para todo tipo de espacios.",
+  "Instalaciones para inmuebles": "Instalaciones adaptadas a viviendas, locales, comunidades y sistemas de automatización y telecomunicaciones.",
+};
+
+function servicesByCategory(category: string) {
+  return SERVICES.filter((s) => s.category === category);
+}
+---
+
+<Layout
+  title="Servicios"
+  description={`Servicios profesionales de ${COMPANY.shortName}: instalaciones eléctricas, reparaciones, mantenimiento, aire acondicionado, placas solares, bombas de pozo y más.`}
+>
+  <section class="relative overflow-hidden bg-gradient-to-br from-brand-dark via-brand-primary to-brand-medium px-4 py-20 md:py-28">
+    <div class="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-brand-accent/[0.03]" aria-hidden="true"></div>
+    <div class="pointer-events-none absolute -bottom-20 -left-20 h-72 w-72 rounded-full bg-brand-light/[0.03]" aria-hidden="true"></div>
+
+    <div class="relative z-10 mx-auto max-w-4xl text-center animate-fade-up">
+      <h1 class="mb-4 text-4xl font-bold text-white md:text-5xl">
+        Nuestros servicios
+      </h1>
+      <p class="mx-auto max-w-2xl text-lg text-white/70">
+        Todos nuestros servicios explicados en detalle. Elige el que necesites y pulsa "Ver servicio" para ampliar la información.
+      </p>
+    </div>
+  </section>
+
+  {CATEGORIES.map((category, catIndex) => {
+    const categoryServices = servicesByCategory(category);
+    if (categoryServices.length === 0) return null;
+
+    return (
+      <section class={`reveal-up px-4 py-20 md:py-28 ${catIndex % 2 === 1 ? "bg-brand-surface-alt" : ""}`} aria-label={category}>
+        <div class="mx-auto max-w-7xl">
+          <SectionTitle
+            title={category}
+            subtitle={CATEGORY_DESCRIPTIONS[category] || ""}
+          />
+
+          <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {categoryServices.map((service, i) => (
+              <div class="reveal-up card-hover card-glow rounded-xl" style={`transition-delay: ${i * 80}ms`}>
+                <ServiceCard service={service} href={`/servicios/${service.slug}`} />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  })}
+
+  <section class="reveal-up px-4 pb-10">
+    <div class="mx-auto max-w-3xl text-center">
+      <p class="text-xs text-gray-400 reveal-up">
+        Algunos servicios pueden depender de la disponibilidad y las características del trabajo. Consulta sin compromiso para cada caso concreto.
+      </p>
+    </div>
+  </section>
+
+  <CTABanner
+    title="¿No encuentras lo que buscas?"
+    subtitle="Si no encuentras el servicio que buscas, consúltanos sin compromiso. Estaremos encantados de ayudarte."
+  />
+</Layout>

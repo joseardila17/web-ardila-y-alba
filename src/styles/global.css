@@ -1,0 +1,669 @@
+/* =========================================
+   ESTILOS GLOBALES — BASE VISUAL DE LA WEB
+   =========================================
+   Este archivo es la raíz de toda la
+   identidad visual. Aquí se definen:
+     - Colores de marca (brand-*)
+     - Fuentes
+     - Animaciones de entrada (una sola vez)
+     - Estilos base
+
+   ═══════════════════════════════════════
+   PALETA DE COLORES (inspirada en el logo)
+   ═══════════════════════════════════════
+   brand-dark        → #0c0a20  Fondo del header, footer y hero.
+   brand-primary     → #1e1b4b  Color corporativo principal.
+   brand-medium      → #312e81  Hover de botones, gradientes.
+   brand-light       → #4f46e5  Elementos secundarios, iconos.
+   brand-accent      → #84cc16  Color de acción (verde lima).
+   brand-accent-dark → #65a30d  Hover de botones accent.
+   brand-accent-light→ #a3e635  Variante clara del accent.
+   brand-surface     → #f8fafc  Fondo claro principal de la web.
+   brand-surface-alt → #f1f5f9  Fondo alterno para secciones.
+   ═══════════════════════════════════════ */
+
+@import "tailwindcss";
+
+@theme {
+  /* -- COLORES CORPORATIVOS PRINCIPALES -- */
+  --color-brand-dark: #0c0a20;
+  --color-brand-primary: #1e1b4b;
+  --color-brand-medium: #312e81;
+  --color-brand-light: #4f46e5;
+
+  /* -- COLOR DE ACENTO (verde lima) -- */
+  --color-brand-accent: #84cc16;
+  --color-brand-accent-dark: #65a30d;
+  --color-brand-accent-light: #a3e635;
+
+  /* -- COLORES DE FONDO -- */
+  --color-brand-surface: #f8fafc;
+  --color-brand-surface-alt: #f1f5f9;
+
+  /* ═══════════════════════════════════════
+     ANIMACIONES DISPONIBLES
+     ═══════════════════════════════════════
+     Solo animaciones de entrada (una vez).
+     No hay animaciones infinitas para
+     evitar consumo continuo de GPU/CPU.
+
+     CÓMO USARLAS:
+       <div class="animate-fade-in">
+       <div class="animate-fade-up [animation-delay:200ms]">
+
+     STAGGER (aparición escalonada):
+       <div class="animate-fade-up"
+            style="animation-delay: {{ i * 100 }}ms">
+
+     RESPETA prefers-reduced-motion:
+       Todas las animaciones se desactivan
+       automáticamente si el usuario lo prefiere.
+     ═══════════════════════════════════════ */
+
+  --animate-fade-in: fade-in 0.4s ease-out both;
+  --animate-fade-up: fade-up 0.4s ease-out both;
+  --animate-scale-in: scale-in 0.35s ease-out both;
+  --animate-slide-down: slide-down 0.2s ease-out both;
+  --animate-fade-scale: fade-scale 0.5s ease-out both;
+  --animate-slide-up-sm: slide-up-sm 0.3s ease-out both;
+}
+
+/* ═══════════════════════════════════════════
+   KEYFRAMES
+   ═══════════════════════════════════════════ */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-down {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes fade-scale {
+  from { opacity: 0; transform: scale(0.97); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes slide-up-sm {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ═══════════════════════════════════════════════
+   SCROLL REVEAL SYSTEM
+   ═══════════════════════════════════════════════
+
+   El contenido es VISIBLE POR DEFECTO (fallback si
+   JavaScript falla). Cuando JS carga, añade la
+   clase "js" a <html> y solo entonces los elementos
+   .reveal* se ocultan a la espera del scroll.
+
+   Flujo:
+     1. HTML → elementos visibles (sin animación)
+     2. JS carga  → <html class="js"> se añade
+     3. CSS con `html.js .reveal*` → opacity: 0
+     4. IntersectionObserver añade `.is-visible`
+        cuando el elemento entra en viewport
+     5. Transición CSS: opacity 0→1, transform none
+
+   Si JS falla → el contenido sigue visible.
+   Si prefers-reduced-motion → el JS revela todo
+     inmediatamente tras marcar html.js.
+   ═══════════════════════════════════════════════ */
+
+/* ── 1. ESTADO INICIAL (visible por defecto) ── */
+.reveal,
+.reveal-up,
+.reveal-left,
+.reveal-right,
+.reveal-scale {
+  /* Nada: contenido visible sin animación */
+}
+
+/* ── 2. ESTADO OCULTO (solo si JS está activo) ── */
+html.js .reveal,
+html.js .reveal-up,
+html.js .reveal-left,
+html.js .reveal-right,
+html.js .reveal-scale {
+  opacity: 0;
+  transition: opacity 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: opacity, transform;
+}
+
+html.js .reveal-up    { transform: translateY(24px); }
+html.js .reveal-left  { transform: translateX(-20px); }
+html.js .reveal-right { transform: translateX(20px); }
+html.js .reveal-scale { transform: scale(0.95); }
+
+/* ── 3. ESTADO VISIBLE (al entrar en viewport) ── */
+html.js .reveal.is-visible,
+html.js .reveal-up.is-visible,
+html.js .reveal-left.is-visible,
+html.js .reveal-right.is-visible,
+html.js .reveal-scale.is-visible {
+  opacity: 1;
+  transform: translateY(0) translateX(0) scale(1);
+}
+
+/* ── 4. STAGGER HELPER ── */
+html.js .stagger-item {
+  transition-delay: calc(var(--stagger-delay, 80ms) * var(--stagger-index, 0));
+}
+
+/* ── 5. NUEVAS CLASES REVEAL ADICIONALES ── */
+html.js .reveal-fade {
+  opacity: 0;
+  transition: opacity 0.5s ease-out;
+  will-change: opacity;
+}
+
+html.js .reveal-fade.is-visible {
+  opacity: 1;
+}
+
+html.js .reveal-scale-sm {
+  opacity: 0;
+  transform: scale(0.98);
+  transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+  will-change: opacity, transform;
+}
+
+html.js .reveal-scale-sm.is-visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+html.js .reveal-left-sm {
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+  will-change: opacity, transform;
+}
+
+html.js .reveal-left-sm.is-visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+html.js .reveal-right-sm {
+  opacity: 0;
+  transform: translateX(10px);
+  transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+  will-change: opacity, transform;
+}
+
+html.js .reveal-right-sm.is-visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* ── 6. MÓVIL: menos distancia, más rápido ── */
+@media (max-width: 767px) {
+  html.js .reveal,
+  html.js .reveal-up,
+  html.js .reveal-left,
+  html.js .reveal-right,
+  html.js .reveal-scale,
+  html.js .reveal-fade,
+  html.js .reveal-scale-sm,
+  html.js .reveal-left-sm,
+  html.js .reveal-right-sm {
+    transition-duration: 0.45s;
+  }
+  html.js .reveal-up    { transform: translateY(14px); }
+  html.js .reveal-left  { transform: translateX(-12px); }
+  html.js .reveal-right { transform: translateX(12px); }
+  html.js .reveal-scale { transform: scale(0.97); }
+  html.js .reveal-scale-sm { transform: scale(0.985); }
+  html.js .reveal-left-sm  { transform: translateX(-8px); }
+  html.js .reveal-right-sm { transform: translateX(8px); }
+
+  .section-accent { width: 2rem; }
+}
+
+/* ═══════════════════════════════════════════════
+   MICRO-INTERACTIONS
+   ═══════════════════════════════════════════════ */
+
+.link-arrow {
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.group:hover .link-arrow {
+  transform: translateX(4px);
+}
+
+/* Premium card hover: elevación ligera + sombra moderada */
+.card-hover {
+  transition: transform 0.25s ease-out,
+              box-shadow 0.25s ease-out,
+              border-color 0.2s ease;
+  will-change: transform;
+}
+
+.card-hover:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.10);
+}
+
+/* Badge / chip con hover sutil */
+.badge-hover {
+  transition: background-color 0.25s ease, color 0.25s ease, transform 0.25s ease;
+}
+
+.badge-hover:hover {
+  transform: scale(1.04);
+}
+
+/* Icono dentro de grupo que escala en hover */
+.group-icon {
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.group:hover .group-icon {
+  transform: scale(1.1);
+}
+
+/* Imagen dentro de grupo con zoom ligero */
+.group-img {
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.group:hover .group-img {
+  transform: scale(1.03);
+}
+
+/* Chip/tag con borde que resalta en hover */
+.chip-hover {
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.chip-hover:hover {
+  border-color: var(--color-brand-accent);
+  background-color: rgba(132, 204, 22, 0.08);
+}
+
+/* ═══════════════════════════════════════════════
+   PREMIUM UTILITY CLASSES
+   ═══════════════════════════════════════════════ */
+
+/* Gradient text: headline impact */
+.text-gradient {
+  background: linear-gradient(135deg, var(--color-brand-accent-light) 0%, var(--color-brand-accent) 50%, #a3e635 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Subtle glass surface without backdrop-blur */
+.glass-card {
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+}
+
+/* Card glow on hover (gradient border + soft shadow) */
+.card-glow {
+  position: relative;
+  contain: layout style;
+  transition: box-shadow 0.3s ease-out,
+              transform 0.3s ease-out;
+}
+
+.card-glow:hover {
+  box-shadow: 0 0 0 1px var(--color-brand-accent),
+              0 8px 24px -4px rgba(132, 204, 22, 0.20);
+  transform: translateY(-2px);
+}
+
+/* Emoji wrapper — bigger, centered, framed */
+.emoji-wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  font-size: 1.25rem;
+  line-height: 1;
+  border-radius: 9999px;
+  background: rgba(132, 204, 22, 0.1);
+  flex-shrink: 0;
+}
+
+/* Decorative accent element for sections */
+.section-accent {
+  width: 2.5rem;
+  height: 0.25rem;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, var(--color-brand-accent), var(--color-brand-accent-light));
+  flex-shrink: 0;
+}
+
+/* Shine effect on accent CTA buttons */
+.button-shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.button-shine::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    110deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.25) 45%,
+    transparent 60%
+  );
+  transform: translateX(-100%);
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+
+.button-shine:hover::after {
+  transform: translateX(100%);
+}
+
+/* ═══════════════════════════════════════════════
+   PREMIUM UTILITY CLASSES — PARTE II
+   ═══════════════════════════════════════════════ */
+
+/* Text highlight: resalta palabras clave dentro de párrafos */
+.text-highlight {
+  color: var(--color-brand-accent-dark);
+  font-weight: 600;
+}
+
+/* Heading underline decorativo */
+.heading-underline {
+  position: relative;
+  display: inline-block;
+}
+
+.heading-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--color-brand-accent), var(--color-brand-accent-light));
+}
+
+/* Subtle link underline animation (for footer, text links) */
+.link-underline {
+  position: relative;
+}
+
+.link-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: currentColor;
+  transition: width 0.3s ease;
+}
+
+.link-underline:hover::after {
+  width: 100%;
+}
+
+/* Step number: circle with scale on hover */
+.step-circle {
+  transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
+}
+
+.step-circle:hover {
+  transform: scale(1.08);
+}
+
+/* Arrow animation for "Ver más" links */
+.arrow-right {
+  display: inline-block;
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.group:hover .arrow-right {
+  transform: translateX(4px);
+}
+
+/* Checkmark icon subtle pulse */
+.check-icon {
+  transition: transform 0.3s ease;
+}
+
+.group:hover .check-icon {
+  transform: scale(1.15);
+}
+
+/* Badge entry: subtle scale */
+.badge-entry {
+  transition: transform 0.25s ease;
+}
+
+.badge-entry:hover {
+  transform: scale(1.03);
+}
+
+/* Social icon hover */
+.social-icon {
+  transition: transform 0.25s ease, color 0.2s ease;
+}
+
+.social-icon:hover {
+  transform: translateY(-2px);
+}
+
+/* Section accent bar animation */
+.section-accent {
+  transition: width 0.4s ease;
+}
+
+.reveal-up.is-visible .section-accent,
+.reveal.is-visible .section-accent,
+.reveal-fade.is-visible .section-accent {
+  width: 3rem;
+}
+
+/* ═══════════════════════════════════════════════
+   BREADCRUMBS
+   ═══════════════════════════════════════════════ */
+
+.breadcrumb-separator {
+  color: rgba(255, 255, 255, 0.4);
+  margin: 0 0.5rem;
+}
+
+/* ═══════════════════════════════════════════════
+   SECTION DIVIDER
+   Borde superior sutil entre secciones. Se usa
+   un borde sólido con opacidad en vez de
+   ::before + gradient para mejor rendimiento.
+   ═══════════════════════════════════════════════ */
+
+.section-divider {
+  height: 1px;
+  background: var(--color-brand-accent);
+  opacity: 0.15;
+}
+
+/* ═══════════════════════════════════════════════
+   FOCUS STYLES — formularios premium
+   ═══════════════════════════════════════════════ */
+
+.input-premium {
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.input-premium:focus {
+  border-color: var(--color-brand-accent);
+  box-shadow: 0 0 0 3px rgba(132, 204, 22, 0.25);
+  outline: none;
+}
+
+/* ═══════════════════════════════════════════
+   prefers-reduced-motion: ACCESIBILIDAD
+   Si el usuario prefiere menos movimiento,
+   se desactivan todas las animaciones.
+   ═══════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .reveal,
+  .reveal-up,
+  .reveal-left,
+  .reveal-right,
+  .reveal-scale,
+  .reveal-fade,
+  .reveal-scale-sm,
+  .reveal-left-sm,
+  .reveal-right-sm,
+  html.js .reveal,
+  html.js .reveal-up,
+  html.js .reveal-left,
+  html.js .reveal-right,
+  html.js .reveal-scale,
+  html.js .reveal-fade,
+  html.js .reveal-scale-sm,
+  html.js .reveal-left-sm,
+  html.js .reveal-right-sm,
+  html.js .reveal.is-visible,
+  html.js .reveal-up.is-visible,
+  html.js .reveal-left.is-visible,
+  html.js .reveal-right.is-visible,
+  html.js .reveal-scale.is-visible,
+  html.js .reveal-fade.is-visible,
+  html.js .reveal-scale-sm.is-visible,
+  html.js .reveal-left-sm.is-visible,
+  html.js .reveal-right-sm.is-visible {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .group-icon,
+  .group-img,
+  .link-arrow,
+  .card-hover,
+  .badge-hover,
+  .chip-hover,
+  .card-glow,
+  .button-shine::after,
+  .arrow-right,
+  .check-icon,
+  .badge-entry,
+  .social-icon,
+  .step-circle,
+  .link-underline::after {
+    transition: none !important;
+    transform: none !important;
+    will-change: auto !important;
+  }
+
+  .card-glow:hover {
+    box-shadow: none;
+    transform: none;
+  }
+
+  .button-shine::after {
+    transform: translateX(-100%) !important;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   ESTILOS BASE
+   ═══════════════════════════════════════════ */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Contenido aislado para reducir cálculos de layout en scroll */
+section {
+  contain: layout style;
+}
+
+body {
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, sans-serif;
+  color: #1e293b;
+  background-color: var(--color-brand-surface);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Outline de accesibilidad global para todos los interactivos */
+a:focus-visible,
+button:focus-visible,
+summary:focus-visible,
+[role="button"]:focus-visible,
+[tabindex]:not([tabindex="-1"]):focus-visible {
+  outline: 2px solid var(--color-brand-accent);
+  outline-offset: 2px;
+  border-radius: 0.5rem;
+}
+
+/* Los inputs/textarea/select usan ring de Tailwind (más limpio) */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: none;
+}
+
+/* Checkbox personalizado con focus visible */
+input[type="checkbox"]:focus-visible {
+  outline: 2px solid var(--color-brand-accent);
+  outline-offset: 2px;
+}
+
+/* Mejora de foco para details/summary */
+details summary:focus-visible {
+  outline: 2px solid var(--color-brand-accent);
+  outline-offset: 2px;
+  border-radius: 0.5rem;
+}
+
+/* Selección de texto personalizada */
+::selection {
+  background-color: var(--color-brand-accent);
+  color: var(--color-brand-dark);
+}
+
+/* Scrollbar sutil (Chrome/Edge) */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-brand-surface);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-brand-light);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-brand-medium);
+}

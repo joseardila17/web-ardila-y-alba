@@ -1,0 +1,27 @@
+---
+export interface Props {
+  title: string;
+  subtitle?: string;
+  class?: string;
+  alignLeft?: boolean;
+}
+
+const { title, subtitle, class: className = "", alignLeft = false } = Astro.props;
+
+const alignClasses = alignLeft ? "text-left" : "text-center";
+const lineMargins = alignLeft ? "ml-0" : "mx-auto";
+---
+
+<div class={`mb-12 reveal-up ${alignClasses} ${className}`}>
+  <div class={`section-accent ${lineMargins} mb-5`}></div>
+
+  <h2 class="text-3xl font-bold tracking-tight text-brand-dark md:text-4xl">
+    {title}
+  </h2>
+
+  {subtitle && (
+    <p class="mx-auto mt-3 max-w-2xl text-lg leading-relaxed text-gray-600/90">
+      {subtitle}
+    </p>
+  )}
+</div>
